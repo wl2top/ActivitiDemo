@@ -1,0 +1,87 @@
+server:
+  port: 8081
+
+# 数据源默认配置
+spring:
+  datasource:
+    name: act_demo
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/act_demo?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=GMT%2B8&useSSL=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #数据库连接池配置（整合Druid数据源）
+    type: com.alibaba.druid.pool.DruidDataSource
+
+    # 表示：连接池启动时要初始化多少个连接，即使客户端这时没有需求，也会初始化空闲连接。【初始化连接池中的连接个数】
+    initialSize: 5
+
+    # minIdle告诉tomcat即使客户端没有需求，也要至少维持多少个空闲连接，以应对客户端的突发需求。
+    minIdle: 2
+
+    # 最主要参数，表示：连接池同时能维持的最大连接数，如果客户端理论上需要100个连接，则这个值设为100。
+    maxActive: 20
+
+    # 表示：获取连接等待超时的时间，单位毫秒，缺省启用公平锁，并发效率会有所下降
+    maxWait: 60000
+
+    # 表示：连接池中一个连接的寿命。连接池初始化一个连接后，会记下初始化的时间，以后每次出借，或有客户端归还这个连接时，连接池会检查  当前时间 - 初始化时间，如果超过maxAge，连接池会删除这个连接。
+    maxAge: 60000
+
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 300000
+
+    # validationQuery属性：用来验证连接是否可用的语句，这个语句至少是返回一条数据的查询语句。每种数据库都有自己的验证语句。
+    # MySql设置成SELECT 1, Oracle设置成SELECT 1 FROM DUAL, Sql Server设置成SELECT 1
+    # 如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会起作用
+    validationQuery: SELECT 1
+
+    # 建议配置为true，不影响性能，并且保证安全性。
+    # 连接闲置时进行检测，如果空闲时间大于timeBetweenEvictionRunsMillis，便执行validationQuery检测连接是否还有效。
+    testWhileIdle: true
+
+    # [客户端]申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能--一般设置为false
+    testOnBorrow: false
+
+    # [客户端]归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能--一般设置为false
+    testOnReturn: false
+
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+
+    # 通过别名的方式配置扩展插件，多个英文逗号分隔，常用的插件有：
+    # 监控统计用的filter:stat
+    # 日志用的filter:log4j-slf4j
+    # 防御sql注入的filter:wall
+    filters: stat,wall,slf4j
+
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+    # 合并多个DruidDataSource的监控数据
+    # useGlobalDataSourceStat: true
+
+  # 设置banner
+  banner:
+    location: classpath:static/banner.txt
+
+  # activiti相关设置
+  activiti:
+    # 没有数据库表时自动创建
+    database-schema-update: true
+    # 自动部署验证设置：true-开启（默认）、false-关闭
+    check-process-definitions: false
+
+
+# mybatis相关配置
+mybatis:
+  # 配置 mapper接口映射文件 的位置
+  mapper-locations: classpath:mapperfiles/*.xml
+  # 实体类所在包名
+  type-aliases-package: com.wl.top.model
+  # 配置开启驼峰命名映射规则
+  configuration:
+    map-underscore-to-camel-case: true
